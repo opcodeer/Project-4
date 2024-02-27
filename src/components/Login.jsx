@@ -22,25 +22,31 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ formData })
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
       });
   
-      const responseBody = await response.text(); // Await the Promise
-      
-      console.log(responseBody); // Now you can access the response text
       if (response.ok) {
         // Handle successful login
+        const responseBody = await response.json();
         console.log("Login Successful");
+        // Save token to local storage or cookies for future requests
+        localStorage.setItem('token', responseBody.authtoken);
+        // Redirect user to another page
         navigate("/");
       } else {
         // Handle login failure (e.g., display error message from json)
-        console.error('Login failed'); // Or access specific error message key
+        const errorResponse = await response.json();
+        console.error('Login failed:', errorResponse.error || 'Unknown error');
       }
     } catch (error) {
       console.error('Error:', error);
       // Handle network or parsing errors
     }
   };
+  
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: '100vh', backgroundColor: 'black' }}>

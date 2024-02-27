@@ -122,4 +122,3 @@ app.post('/login',[
 app.listen(port, () => {
     console.log(`The application successfully started on port ${port}`);
 });
-// bcrypt ensures password security by securely hashing passwords, while jsonwebtoken facilitates secure user authentication and authorization by generating and verifying JSON Web Tokens.

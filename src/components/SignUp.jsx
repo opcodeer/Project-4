@@ -21,19 +21,28 @@ const SignUp = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password
+        })
       });
+  
+      const responseData = await response.json();
       if (response.ok) {
-        navigate("/");
         console.log('Signup successful!');
+        localStorage.setItem('token', responseData.authtoken);
+        navigate("/");
+        // Handle successful signup, such as redirecting to another page
       } else {
-        alert('Invalid credentials');
-        console.error('Signup failed!');
+        // Handle failed signup
+        console.error('Signup failed:', responseData.error || 'Unknown error');
       }
     } catch (error) {
       console.error('Error during signup:', error);
     }
   }
+  
 
   return (
     <Box sx={{display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",height:'100vh',backgroundColor:'black'}}>
