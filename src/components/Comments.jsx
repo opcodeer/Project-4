@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Paper, Avatar, Typography, IconButton, TextField } from '@mui/material';
+import { Paper, Avatar, Typography, IconButton, TextField, Stack } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import SendIcon from '@mui/icons-material/Send';
+import LockIcon from '@mui/icons-material/Lock';
 
 const Comment = () => {
   const [newComment, setNewComment] = useState('');
@@ -12,36 +13,39 @@ const Comment = () => {
   };
 
   const handleCommentSubmit = () => {
-    // Check if the newComment is not empty before submitting
     if (newComment.trim() !== '') {
-      // Create a new comment object
       const commentObject = {
         user: 'Username', // You can replace this with the actual username
         text: newComment,
         likes: 0,
       };
 
-      // Add the new comment to the comments array
       setComments([...comments, commentObject]);
-
-      // Reset the input field after submitting
       setNewComment('');
     }
   };
 
   return (
     <div>
-      {/* Input field for adding a new comment */}
+      <Stack direction='row' alignItems='center' sx={{ marginBottom: '8px', color: 'white' }}>
+      {!localStorage.getItem('token') && (
+    <React.Fragment>
+    <LockIcon style={{ marginRight: '8px' }} />
+    <Typography variant='body1'>
+      Please log in to use comment section
+    </Typography>
+  </React.Fragment>
+)}
+      </Stack>
       <TextField
         fullWidth
         size="small"
-        label="Add a comment"
         variant="outlined"
         margin="dense"
         placeholder="Add a comment"
         value={newComment}
         onChange={handleCommentChange}
-        sx={{ width: '100%', boxShadow: '0 0 10px white', marginBottom: '50px', marginTop: '15px', '& label': { color: 'white', opacity: '0.5' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'white' }, }, '& .MuiOutlinedInput-input': { color: 'white' } }}
+        disabled={!localStorage.getItem('token')}
         InputProps={{
           endAdornment: (
             <IconButton color="primary" onClick={handleCommentSubmit} edge="end">
@@ -49,21 +53,36 @@ const Comment = () => {
             </IconButton>
           ),
         }}
+        sx={{
+          width: '100%',
+          boxShadow: '0 0 10px white',
+          marginBottom: '50px',
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'white',
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            color: 'white',
+          },
+          '& .MuiInputBase-root': {
+            color: 'white',
+          },
+        }}
       />
 
-      {/* Display comments */}
       {comments.map((comment, index) => (
-        <Paper key={index} elevation={3} sx={{ p: 2, marginBottom: 2, display: 'flex' }}>
-          <Avatar sx={{ marginRight: 2 }}>U</Avatar>
+        <Paper key={index} elevation={3} style={{ padding: '16px', marginBottom: '8px', display: 'flex' }}>
+          <Avatar style={{ marginRight: '8px' }}>U</Avatar>
           <div>
-            <Typography variant="body1" fontWeight="bold">
+            <Typography variant="body1" style={{ fontWeight: 'bold' }}>
               {comment.user}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {comment.text}
             </Typography>
-            <div style={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
-              <IconButton size="small" color="primary" sx={{ marginRight: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '4px' }}>
+              <IconButton size="small" color="primary" style={{ marginRight: '4px' }}>
                 <ThumbUpIcon />
               </IconButton>
               <Typography variant="body2" color="text.secondary">
