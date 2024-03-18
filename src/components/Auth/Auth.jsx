@@ -126,16 +126,21 @@ const Auth = (props) => {
                             <Input name='email' id="email" label='Email Address' handleChange={handleChange} type="email" value={formData.email} />
                             <Input name='password' label='Password' handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
                             {isSignUp && <Input name="confirmPassword" label="Confirm Password" handleChange={handleChange} type="password" />}
-                            {otp === 0 && isSignUp ?
-                                <Button onClick={sendOtp} id="sendOtp" color='primary' className={classes.submit}>Send OTP</Button> :
-                                !isVerified ?
-                                    <>
-                                        <Input placeholder="Enter OTP" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} />
-                                        <Button onClick={verify} style={{ borderRadius: "10%", padding: ".5%" }}>Verify</Button>
-                                        <p style={{ color: "red" }}>{timer >= 0 ? timer : setTime()}</p>
-                                    </> :
-                                    <p style={{ color: "green" }}>Verified</p>
-                            }
+                            {isSignUp && otp === 0 ? (
+                                    <Button onClick={sendOtp} id="sendOtp" color='primary' className={classes.submit}>Send OTP</Button>
+                                ) : (
+                                    isSignUp && !isVerified ? (
+                                        <>
+                                            <Input placeholder="Enter OTP" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} />
+                                            <Button onClick={verify} style={{ borderRadius: "10%", padding: ".5%" }}>Verify</Button>
+                                            <p style={{ color: "red" }}>{timer >= 0 ? timer : setTime()}</p>
+                                        </>
+                                    ) : (
+                                        isSignUp && <p style={{ color: "green" }}>Verified</p>
+                                    )
+                            )}
+
+
                         </Grid>
                         <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>
                             {isSignUp ? 'Sign Up' : 'Sign In'}
