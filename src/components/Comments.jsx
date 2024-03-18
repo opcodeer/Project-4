@@ -7,7 +7,14 @@ import LockIcon from '@mui/icons-material/Lock';
 const Comment = () => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState([]);
+  // Retrieve the JSON string from localStorage
+  const profileJson = localStorage.getItem('profile');
 
+// Parse the JSON string into an object
+  const profile = JSON.parse(profileJson);
+
+// Access the token property from the profile object
+  const token = profile.token;
   const handleCommentChange = (event) => {
     setNewComment(event.target.value);
   };
@@ -28,7 +35,7 @@ const Comment = () => {
   return (
     <div>
       <Stack direction='row' alignItems='center' sx={{ marginBottom: '8px', color: 'white' }}>
-      {!localStorage.getItem('token') && (
+      {!token && (
     <React.Fragment>
     <LockIcon style={{ marginRight: '8px' }} />
     <Typography variant='body1'>
@@ -45,7 +52,7 @@ const Comment = () => {
         placeholder="Add a comment"
         value={newComment}
         onChange={handleCommentChange}
-        disabled={!localStorage.getItem('token')}
+        disabled={!token}
         InputProps={{
           endAdornment: (
             <IconButton color="primary" onClick={handleCommentSubmit} edge="end">

@@ -1,17 +1,24 @@
-import React from 'react';
-import { Stack, Typography, Button, Box } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect,useState } from 'react';
+import { Stack, Typography, Button, Toolbar, Avatar } from "@mui/material";
+import { Link, useNavigate,useLocation } from "react-router-dom";
 import { logo } from '../utils/constants';
+import { useDispatch } from 'react-redux';
 import SearchBar from "./SearchBar";
-
+import useStyles from './styles';
 const Navbar = () => {
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate("/");
-  };
-
+  const classes = useStyles();
+  const location = useLocation();
+  const [user,setUser] = useState(JSON.parse(localStorage.getItem('profile')));
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    setUser(JSON.parse(localStorage.getItem('profile')));
+  },[location]);
+  const Logout = ()=>{
+       dispatch({type:'LOGOUT'});
+       navigate('/');
+       setUser(null);
+  }
   return (
     <Stack direction="row" alignItems="center" p={2} 
       sx={{position:'sticky',background:'#000',top:0,justifyContent:'space-between',zIndex:'999'}}>
@@ -19,18 +26,17 @@ const Navbar = () => {
         <img src={logo} alt="logo" height={45}/> <Typography color="white" fontSize="1.5rem" fontWeight="bold">Metube</Typography>
       </Link>
       <SearchBar/>
-      {!localStorage.getItem('token') ? (
-        <Box sx={{display:'flex',justifyContent:'center',alignItems:'center'}}>
-          <Link to="/signup">
-            <Button variant="outlined" sx={{marginRight:"20px",'&:hover':{boxShadow:'0 0 15px blue'}}}>Sign Up</Button>
-          </Link>
-          <Link to="/login">
-            <Button variant="outlined" sx={{'&:hover':{boxShadow:'0 0 15px blue'}}}>Login</Button>
-          </Link>
-        </Box>
-      ) : (
-        <Button onClick={handleLogout} variant="outlined" sx={{'&:hover':{boxShadow:'0 0 15px blue'}}}>Logout</Button>
-      )}
+        <Toolbar className={classes.toolbar}>
+        {user?.result ? (
+  <div className={classes.profile}>
+    <Avatar className={classes.purple} alt={user.result.name} src={user.result.imageUrl}>{user.result.name.charAt(0)}</Avatar>
+    <Typography className={classes.userName} variant="h6">{user.result.name}</Typography>
+    <Button variant='contained' className={classes.logout} color='secondary' onClick={Logout}>Logout</Button>
+  </div>
+  ) : (
+     <Button component={Link} to='/auth' variant='contained' color='primary'>Sign In</Button>
+  )}
+        </Toolbar>
     </Stack>
   );
 };
