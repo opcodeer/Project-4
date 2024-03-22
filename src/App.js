@@ -3,10 +3,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Box } from '@mui/material';
 import LoadingBar from 'react-top-loading-bar';
 import { ChannelDetail, VideoDetail, SearchFeed, Navbar, Feed,Auth } from './components';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 // import SignUp from "./components/SignUp";
 // import Login from "./components/Login";
-const socket= io.connect("https://490bj8xz-8080.inc1.devtunnels.ms");
+// const socket= io.connect("http://localhost:8000");
 
 const App = () => {
   const [progress, setProgress] = useState(0);
@@ -16,7 +16,8 @@ const App = () => {
   }
   
   async function sendOtp(id){
-    const response= await fetch("https://490bj8xz-8080.inc1.devtunnels.ms/otpVerification?id="+ id,{
+    console.log(id);
+    const response= await fetch("http://localhost:8000/otpVerification/auth?id="+ id,{
       method: "GET" ,
      })
      const result = await response.text();

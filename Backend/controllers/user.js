@@ -4,54 +4,56 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 // require('dotenv').config();
 JWT_SECRET = 'mySecretKeyForJWTs@2024'
-const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
-// const app = express();
-const verifyEmail = async (email) => {
-    const otp = generateOTP();
-    // These id's and secrets should come from .env file.
-    const CLIENT_ID = '140083932391-4846kjcp9bhv4ctbfto324cr4d8tnv53.apps.googleusercontent.com';
-    const CLIENT_SECRET = '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';
-    const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-    const REFRESH_TOKEN = '1//04XsPXW5BR2k5CgYIARAAGAQSNwF-L9IrhuWB69JvrQpDbX60y4OBD3nUibEfRw9_CR2EuuoMuRcjNTdfwIvJp3SK3rV_N_Am6Qg';
+// const nodemailer = require('nodemailer');
+// const google = require('googleapis');
+// const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
+// // const app = express();
+// const verifyEmail = async (email) => {
+//     const otp = generateOTP();
+//     // These id's and secrets should come from .env file.
+//     // const CLIENT_ID = '140083932391-4846kjcp9bhv4ctbfto324cr4d8tnv53.apps.googleusercontent.com';
+//     // const CLIENT_SECRET = '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';
+//     // const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+//     // const REFRESH_TOKEN = '1//04XsPXW5BR2k5CgYIARAAGAQSNwF-L9IrhuWB69JvrQpDbX60y4OBD3nUibEfRw9_CR2EuuoMuRcjNTdfwIvJp3SK3rV_N_Am6Qg';
 
-    const oAuth2Client = new google.auth.OAuth2(
-        CLIENT_ID,
-        CLIENT_SECRET,
-        REDIRECT_URI
-    );
-    oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+//     // const oAuth2Client = new google.auth.OAuth2(
+//     //     CLIENT_ID,
+//     //     CLIENT_SECRET,
+//     //     REDIRECT_URI
+//     // );
+//     // oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
-    try {
-        const accessToken = await oAuth2Client.getAccessToken();
+//     try {
+//         // const accessToken = await oAuth2Client.getAccessToken();
 
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: 'gautamdtua42003@gmail.com',
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken,
-            },
-        });
+//         const transport = nodemailer.createTransport({
+//             service: 'gmail',
+//             auth: {
+//                 type: 'OAuth2',
+//                 user: 'gautamdtua42003@gmail.com',
+//                 clientId: CLIENT_ID,
+//                 clientSecret: CLIENT_SECRET,
+//                 refreshToken: REFRESH_TOKEN,
+//                 accessToken: accessToken,
+//             },
+//         });
 
-        const mailOptions = {
-            from: 'Metube <gautamdtua42003@gmail.com>',
-            to: email,
-            subject: `[Metube] Your one time password-${otp}`,
-            text: `Your one time password is ${otp}`,
-            html: `Your one time password is <b>${otp}</b>`,
-        };
+//         const mailOptions = {
+//             from: 'Metube <gautamdtua42003@gmail.com>',
+//             to: email,
+//             subject: `[Metube] Your one time password-${otp}`,
+//             text: `Your one time password is ${otp}`,
+//             html: `Your one time password is <b>${otp}</b>`,
+//         };
 
-        const result = await transport.sendMail(mailOptions);
-        console.log('Email sent...', result);
-        return { success: true,otp };
-    } catch (error) {
-        console.error('Email error:', error.message);
-        return { success: false, error: error.message };
-    }
-};
+//         const result = await transport.sendMail(mailOptions);
+//         console.log('Email sent...', result);
+//         return { success: true,otp };
+//     } catch (error) {
+//         console.error('Email error:', error.message);
+//         return { success: false, error: error.message };
+//     }
+// };
 const signup = async (req, res) => {
     const { firstName, lastName, email, password, confirmPassword } = req.body;
     
@@ -63,7 +65,7 @@ const signup = async (req, res) => {
         
         const hashedPassword = await bcrypt.hash(password, 12);
         
-        const user = await User.create({ name: `${firstName} ${lastName}`, email, password: hashedPassword });
+        const user = await User.create({ name: `${firstName} ${lastName}`, email:email, password: hashedPassword });
         
         const authToken = jwt.sign({ email: user.email, id: user._id }, JWT_SECRET, { expiresIn: '1h' });
         
@@ -101,7 +103,6 @@ const signin = async (req, res) => {
 module.exports = {
     signin,
     signup,
-    verifyEmail,
 };
 // const verifyOtp = async (email) => {
 //     try {

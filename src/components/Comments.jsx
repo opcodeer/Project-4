@@ -10,11 +10,12 @@ const Comment = () => {
   // Retrieve the JSON string from localStorage
   const profileJson = localStorage.getItem('profile');
 
-// Parse the JSON string into an object
+  // Parse the JSON string into an object
   const profile = JSON.parse(profileJson);
 
-// Access the token property from the profile object
-  const token = profile.token;
+  // Access the token property from the profile object if it exists
+  const token = profile ? profile.token : null;
+
   const handleCommentChange = (event) => {
     setNewComment(event.target.value);
   };
@@ -35,14 +36,14 @@ const Comment = () => {
   return (
     <div>
       <Stack direction='row' alignItems='center' sx={{ marginBottom: '8px', color: 'white' }}>
-      {!token && (
-    <React.Fragment>
-    <LockIcon style={{ marginRight: '8px' }} />
-    <Typography variant='body1'>
-      Please log in to use comment section
-    </Typography>
-  </React.Fragment>
-)}
+        {!token && (
+          <React.Fragment>
+            <LockIcon style={{ marginRight: '8px' }} />
+            <Typography variant='body1'>
+              Please log in to use comment section
+            </Typography>
+          </React.Fragment>
+        )}
       </Stack>
       <TextField
         fullWidth

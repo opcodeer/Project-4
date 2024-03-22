@@ -20,12 +20,4 @@ export const signin = (formData, navigate) => async (dispatch) => {
       console.log(error);
     }
  }
-//  export const verifyOtp = (formData) => async (dispatch) => {
-//     try{
-//       const { data } = await api.VerifyOtp(formData);
-//       dispatch({type: GETOTP, data});
-//     } catch(error){
-//       console.log(error);
-//     }
-//  }
  

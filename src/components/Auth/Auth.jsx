@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Button, Paper, Grid, Typography, Container } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { GoogleLogin } from 'react-google-login';
@@ -10,20 +10,27 @@ import Icon from './Icon';
 import { gapi } from 'gapi-script';
 import useStyles from './styles';
 
-const initialState = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
+const initialState = { firstName: '', lastName: '',email:'', password: '', confirmPassword: '' };
 
 const Auth = (props) => {
+    let newEmail;
+    // let emailInput = document.getElementById('email');
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [formData, setFormData] = useState(initialState);
     const classes = useStyles();
     const [showPassword, setShowPassword] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
-    const clearIntervalRef = useRef();
-    const [timer, setTimer] = useState(60);
+    const [Email,setEmail] = useState('');
+    // const clearIntervalRef = useRef();
+    // const [timer, setTimer] = useState(60);
     const [isVerified, setVerified] = useState(false);
-    const [inputOtp, setInputOtp] = useState('');
-    const [otp, setOtp] = useState(0);
+    // const [inputOtp, setInputOtp] = useState('');
+    // const [otp, setOtp] = useState(0);
+    useEffect(() => {
+        // Update the value of the input tag
+        console.log(Email);
+    }, [Email]);
 
     useEffect(() => {
         const start = async () => {
@@ -38,37 +45,36 @@ const Auth = (props) => {
         };
         gapi.load('client:auth2', start);
     }, []);
+    // const setTime = () => {
+    //     setOtp(0);
+    //     setTimer(60);
+    //     clearInterval(clearIntervalRef.current);
+    // };
 
-    const setTime = () => {
-        setOtp(0);
-        setTimer(60);
-        clearInterval(clearIntervalRef.current);
-    };
+    // const sendOtp = async () => {
+    //     try {
+    //         const res = await props.otp(formData.email);
+    //         setOtp(res);
+    //         clearIntervalRef.current = setInterval(() => {
+    //             setTimer((prevTimer) => prevTimer - 1);
+    //         }, 1000);
+    //     } catch (error) {
+    //         console.error('Error sending OTP:', error);
+    //     }
+    // };
 
-    const sendOtp = async () => {
-        try {
-            const res = await props.otp(formData.email);
-            setOtp(res);
-            clearIntervalRef.current = setInterval(() => {
-                setTimer((prevTimer) => prevTimer - 1);
-            }, 1000);
-        } catch (error) {
-            console.error('Error sending OTP:', error);
-        }
-    };
-
-    const verify = () => {
-        if (inputOtp === otp) {
-            setVerified(true);
-            clearInterval(clearIntervalRef.current);
-        } else {
-            console.log('Invalid OTP');
-        }
-    };
-
+    // const verify = () => {
+    //     if (inputOtp === otp) {
+    //         setVerified(true);
+    //         clearInterval(clearIntervalRef.current);
+    //     } else {
+    //         console.log('Invalid OTP');
+    //     }
+    // };
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (isSignUp) {
+            console.log(isVerified);
             if (!isVerified) {
                 console.error('Please verify your email');
                 return;
@@ -102,6 +108,25 @@ const Auth = (props) => {
             console.error('Google authentication error:', error);
         }
     };
+    const VerifySuccess = async (res) => {
+        const result = res?.profileObj;
+        const token = res?.tokenId;
+        // const emailInput = document.getElementById('email'); // Define emailInput within VerifySuccess function
+        try {
+            newEmail = result?.email;
+            console.log(newEmail);
+            // emailInput.value = `${newEmail}`;
+            await setEmail(newEmail);
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                email: newEmail // Update formData with the new email
+            }));
+            await setVerified(true);
+        } catch (error) {
+            console.error('Google authentication error:', error);
+        }
+    };
+       
 
     const googleFailure = (error) => {
         console.error('Google authentication failed:', error);
@@ -115,7 +140,7 @@ const Auth = (props) => {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography variant='h5'>{isSignUp ? 'Sign Up' : 'Sign In'}</Typography>
-                    <form className={classes.form} onSubmit={handleSubmit}>
+                    <form className={classes.form} onSubmit={handleSubmit} method='POST'>
                         <Grid container spacing={2}>
                             {isSignUp && (
                                 <>
@@ -123,10 +148,10 @@ const Auth = (props) => {
                                     <Input name='lastName' label='Last Name' handleChange={handleChange} half />
                                 </>
                             )}
-                            <Input name='email' id="email" label='Email Address' handleChange={handleChange} type="email" value={formData.email} />
+                            <Input name='email' disabled={false} id="email" label='Email Address' type="email" value={isSignUp?`${Email}`:formData.email} handleChange={handleChange}/>
                             <Input name='password' label='Password' handleChange={handleChange} type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword} />
                             {isSignUp && <Input name="confirmPassword" label="Confirm Password" handleChange={handleChange} type="password" />}
-                            {isSignUp && otp === 0 ? (
+                            {/* {isSignUp && otp === 0 ? (
                                     <Button onClick={sendOtp} id="sendOtp" color='primary' className={classes.submit}>Send OTP</Button>
                                 ) : (
                                     isSignUp && !isVerified ? (
@@ -138,7 +163,7 @@ const Auth = (props) => {
                                     ) : (
                                         isSignUp && <p style={{ color: "green" }}>Verified</p>
                                     )
-                            )}
+                            )} */}
 
 
                         </Grid>
@@ -156,10 +181,10 @@ const Auth = (props) => {
                                     disabled={renderProps.disabled}
                                     startIcon={<Icon />}
                                     variant='contained'>
-                                    Google Sign In
+                                    {isSignUp ? 'Verify Email' : 'Google Sign In'}
                                 </Button>
                             )}
-                            onSuccess={googleSuccess}
+                            onSuccess={isSignUp?VerifySuccess:googleSuccess}
                             onFailure={googleFailure}
                             cookiePolicy={'single_host_origin'}
                         />
